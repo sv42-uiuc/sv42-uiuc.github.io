@@ -1,14 +1,10 @@
 
-// Global Variables
-
-
 // ~~~~~~~~~~~~~~~~ Page Interaction Functions ~~~~~~~~~~~~~~~~~~~~~~~~~
 function homeScreen(){
     document.getElementById("bar-chart").style.visibility = "hidden";
-    document.getElementById("donut-chart").style.visibility = "hidden";
+    document.getElementById("tree-chart").style.visibility = "hidden";
     buildHomePage();
     buildYearSelector(0);
-    //buildBarChart(1964);
 }
 
 // Plot Conductor - Manage the plots to be updated
@@ -36,16 +32,17 @@ function updateScene(aYear){
 // Clear Previous Chart from Page
 function clearPreviousChartFromDOM(){
     document.getElementById("bar-chart").style.visibility = "hidden";
-    document.getElementById("donut-chart").style.visibility = "hidden";
+    document.getElementById("tree-chart").style.visibility = "hidden";
     document.getElementById("year-selector").innerHTML = "";
     document.getElementById("bar-chart").innerHTML= "";
-    document.getElementById("donut-chart").innerHTML = "";
+    document.getElementById("tree-chart").innerHTML = "";
     document.getElementById("olympic-insights").innerHTML = "";
 }
 
 // Build the Year Selector at the Bottom of the Screen
 // Create a Function to Manage what is displayed on the page
 function buildYearSelector(aYear){
+    // Code follows example laid out in Bootstrap docs --> https://getbootstrap.com/docs/4.3/components/navs/
     var navBarSelector = '<br><nav class="nav justify-content-center nav-fill">';
     var tmp = "";
 
@@ -86,7 +83,7 @@ function buildHomePage(){
                 With the olympics starting again this summer, lets take a look at each countries historical ability to excel throughout the games.
                 Taking an overview of the last 50 years, we will see which countries did the best and those events that lead them to victory<br><br><br>
             </h4>
-            <h4>Lets Start!</h4>
+            <h4>Lets Get Started by Selecting a Year Below!</h4>
         </div>
     </div>`;
     document.getElementById("olympic-insights").innerHTML = innerhtml;
@@ -127,15 +124,14 @@ async  function buildEventInsights(aYear){
         "reign over" 
     ];
 
-    let tmp = 0;
     // console.log(event);
     let innerhtml = `<div class="jumbotron"">
         <div class="container"> 
             <h1 class="display-3">${event.edition}</h1>
             <hr><br>
             <p class="lead">* The ${event.edition} was hosted between ${event.start_date} and ${event.end_date}</p>
-            <p class="lead">* Hosted in the ${city_adjectives[getRandInt(city_adjectives.length)]} city of ${event.city}, ${event.country}. The event was ${event_adjectives[getRandInt(event_adjectives.length)]}</p> 
-            <p class="lead">* Roughly <u>${event.total_countries}</u> countries worldwide sent <u> ${Math.floor(event.total_athletes)}</u> Olympians to compete in multitude of events.</p> 
+            <p class="lead">* Hosted in the ${city_adjectives[getRandInt(city_adjectives.length)]} city of ${event.city}, ${event.host}. The event was ${event_adjectives[getRandInt(event_adjectives.length)]}</p> 
+            <p class="lead">* Roughly <u>${event.total_countries}</u> countries worldwide sent <u> ${Math.floor(event.total_athletes)}</u> Olympians to compete.</p> 
             <p class="lead">* There were over <strong>${Math.floor(event.total_events)}</strong> different olympic events that year.</p>
             <p class="lead">* This event resulted in <em>${event.winner}</em> ${winner_adjectives[getRandInt(winner_adjectives.length)]} the event. Winning <strong>${event.total}</strong> medals throughout the games</p>
             <hr><br>
@@ -205,8 +201,9 @@ async function buildBarChart(aYear){
 
     // Sort By Total Medals
     filteredData.sort((a, b) => b.total - a.total);
-    let max = Math.ceil(filteredData[0].total / 10) * 10; 
-
+    let max = Math.ceil(filteredData[0].total / 10) * 10;
+    
+    // Stacked Bar Chart follows format from --> https://dataviz.unhcr.org/tools/d3/d3_stacked_bar_chart.html
     // Stack Data
     const stack = d3.stack()
     .keys(typeKeys)
@@ -359,7 +356,7 @@ async function buildBarChart(aYear){
         .text("Gold")
     
     document.getElementById("bar-chart").style.visibility = "visible";
-    document.getElementById("donut-chart").style.visibility = "visible";
+    document.getElementById("tree-chart").style.visibility = "visible";
 }
 
 // Tooltip Formatter
@@ -382,7 +379,7 @@ function barChartToolTip(toolTipData) {
 // Tree Chart Experiment
 async function buildTreeChart(aYear, aCountry, aColorScheme){
     
-    document.getElementById("donut-chart").innerHTML = "";
+    document.getElementById("tree-chart").innerHTML = "";
 
     // Convert Color Scheme ['bronze', 'silver', 'gold']
     let tmp = {
@@ -426,6 +423,7 @@ async function buildTreeChart(aYear, aCountry, aColorScheme){
     }, []);
     data = helper;
 
+    // Collapsible tree chart comes primarily from --> https://observablehq.com/@d3/collapsible-tree
     // Specify the charts’ dimensions. The height is variable, depending on the layout.
     const width = 1200;
     const marginTop = 250;
@@ -446,7 +444,7 @@ async function buildTreeChart(aYear, aCountry, aColorScheme){
 
     // Create the SVG container, a layer for the links and a layer for the nodes.
     const svg = d3
-        .select("#donut-chart")
+        .select("#tree-chart")
         .append("svg")
         .attr("width", width)
         .attr("height", dx)
@@ -570,7 +568,7 @@ async function buildTreeChart(aYear, aCountry, aColorScheme){
     });
 
     update(null, root);
-    document.getElementById("donut-chart").style.visibility = "visible";
+    document.getElementById("tree-chart").style.visibility = "visible";
 
 }
 
@@ -582,5 +580,3 @@ function getIndexOfElement(anArray, aName){
     }
     return null;
 }
-
-// ~~~~~~~~~~~~~~~~~~~~ Functions tied to Fact Section ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
